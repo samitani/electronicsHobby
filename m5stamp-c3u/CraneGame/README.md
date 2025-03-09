@@ -2,7 +2,7 @@
 
 CraneGame but it has only 2 axies.
 
-![play](images/play.git)
+![play](images/play.gif)
 ![circuit1](images/circuit_1.jpg)
 ![circuit2](images/circuit_2.jpg)
 
