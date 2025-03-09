@@ -2,9 +2,12 @@
 #include <Adafruit_NeoPixel.h>
 #include <ESP32Servo.h>
 
-#define LED_PIN 2
-#define BTN_PIN 10
+#define M5LED_PIN 2
 #define SERVO_PIN 8
+
+#define JOYSTICK_PUSH_PIN 10
+#define JOYSTICK_X_PIN 0
+#define JOYSTICK_Y_PIN 1
 
 #define TB6647PG_1_S_PIN 3
 #define TB6647PG_2_S_PIN 4
@@ -12,13 +15,13 @@
 #define TB6647PG_B_PIN 6
 #define MOTOR_DELAY_MS 3
 
-Adafruit_NeoPixel pixels(1, LED_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels(1, M5LED_PIN, NEO_GRB + NEO_KHZ800);
 Servo motor_servo;
 int valueX, valueY, valueBtn, isArmOpen;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(BTN_PIN, INPUT_PULLUP);
+  pinMode(JOYSTICK_PUSH_PIN, INPUT_PULLUP);
 
   pinMode(TB6647PG_1_S_PIN,OUTPUT);
   pinMode(TB6647PG_2_S_PIN,OUTPUT);
@@ -68,9 +71,9 @@ void motor_forword() {
 }
 
 void loop() {
-  valueX = analogRead(0);
-  valueY = analogRead(1);
-  valueBtn = digitalRead(BTN_PIN);
+  valueX = analogRead(JOYSTICK_X_PIN);
+  valueY = analogRead(JOYSTICK_Y_PIN);
+  valueBtn = digitalRead(JOYSTICK_PUSH_PIN);
  
   if (valueX > 4050) { // UP
     pixels.setPixelColor(0, pixels.Color(128, 0, 0));
