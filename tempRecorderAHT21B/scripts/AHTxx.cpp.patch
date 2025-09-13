@@ -1,0 +1,14 @@
+--- .pio/libdeps/digispark-tiny/AHTxx/src/AHTxx.cpp	2025-09-13 15:20:28.622441192 +0900
++++ AHTxx.cpp	2025-09-13 15:20:22.715973145 +0900
+@@ -543,7 +543,10 @@
+   }
+ 
+   /* read n-bytes from "wire.h" rxBuffer */
+-  Wire.readBytes(_rawData, dataSize);                  //"readBytes()" from Stream Class 
++  for (int i = 0; i < dataSize; i++) {
++    _rawData[i] = Wire.read();
++  }
++  //Wire.readBytes(_rawData, dataSize);                  //"readBytes()" from Stream Class 
+ 
+   /* check busy bit after measurement dalay */
+   _status = _getBusy(AHTXX_USE_READ_DATA);             //update status byte, read status byte & check busy bit
