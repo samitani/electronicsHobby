@@ -1,2 +1,2 @@
 Import("env")
-env.Execute("patch .pio/libdeps/digispark-tiny/AHTxx/src/AHTxx.cpp < scripts/AHTxx.cpp.patch")
+env.Execute("patch --reject-file=- .pio/libdeps/digispark-tiny/AHTxx/src/AHTxx.cpp < scripts/AHTxx.cpp.patch || true")
