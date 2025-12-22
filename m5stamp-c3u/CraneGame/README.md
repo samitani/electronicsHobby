@@ -18,5 +18,9 @@ CraneGame but it has only 2 axies.
 | Joystick Module  | [ジョイスティックRKJXV122400R DIP化キット](https://akizukidenshi.com/catalog/g/g115433/) |
 | Linear DC/DC Regulator | [ROHM BP5293-12](https://akizukidenshi.com/catalog/g/g111189/) |
 
+# 3D Printings
+
+* [Servo Gripper](https://www.thingiverse.com/thing:3056229)
+
 # Breadboard
 ![Breadboard](CraneGame.png)
