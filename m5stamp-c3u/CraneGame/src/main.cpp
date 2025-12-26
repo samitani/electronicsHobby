@@ -90,19 +90,19 @@ void loop() {
     digitalWrite(TB6647PG_2_S_PIN, LOW);
     motor_forword();
   } else if (valueY > 4050) { // RIGHT
-    pixels.setPixelColor(0, pixels.Color(0, 128, 0));
-    pixels.show();
-
-    digitalWrite(TB6647PG_1_S_PIN, LOW);
-    digitalWrite(TB6647PG_2_S_PIN, HIGH);
-    motor_forword();
-  } else if (valueY < 700) { // LEFT
     pixels.setPixelColor(0, pixels.Color(128, 128, 128));
     pixels.show();
 
     digitalWrite(TB6647PG_1_S_PIN, LOW);
     digitalWrite(TB6647PG_2_S_PIN, HIGH);
     motor_backword();
+  } else if (valueY < 700) { // LEFT
+    pixels.setPixelColor(0, pixels.Color(0, 128, 0));
+    pixels.show();
+
+    digitalWrite(TB6647PG_1_S_PIN, LOW);
+    digitalWrite(TB6647PG_2_S_PIN, HIGH);
+    motor_forword();
   } else if (!valueBtn) {
     pixels.setPixelColor(0, pixels.Color(128, 128, 0));
     pixels.show();
