@@ -1,6 +1,6 @@
-#include <math.h>
 #include <Adafruit_NeoPixel.h>
 #include <ESP32Servo.h>
+#include <math.h>
 
 #define M5LED_PIN 2
 #define SERVO_PIN 8
@@ -9,119 +9,204 @@
 #define JOYSTICK_X_PIN 0
 #define JOYSTICK_Y_PIN 1
 
+#define JOYSTICK_THRESHOLD_DOWN 4050
+#define JOYSTICK_THRESHOLD_UP 300
+#define JOYSTICK_THRESHOLD_LEFT 700
+#define JOYSTICK_THRESHOLD_RIGHT 4050
+
 #define TB6647PG_1_S_PIN 3
 #define TB6647PG_2_S_PIN 4
 #define TB6647PG_A_PIN 5
 #define TB6647PG_B_PIN 6
 #define MOTOR_DELAY_MS 3
 
+#ifdef ENABLE_GRIPPER_LOTTERY
+#define GRIP_DETECTI_PIN 20
+#define GRIPPER_LOTTERY_THRESHOLD_MIN 400
+#define GRIPPER_LOTTERY_THRESHOLD_MAX 1000
+#endif
+
+#define COLOR_NONE pixels.Color(0, 0, 0)
+#define COLOR_RED pixels.Color(255, 0, 0)
+#define COLOR_BLUE pixels.Color(0, 0, 255)
+#define COLOR_GREEN pixels.Color(0, 255, 0)
+#define COLOR_YELLOW pixels.Color(255, 255, 0)
+#define COLOR_WHITE pixels.Color(255, 255, 255)
+
 Adafruit_NeoPixel pixels(1, M5LED_PIN, NEO_GRB + NEO_KHZ800);
 Servo motor_servo;
-int valueX, valueY, valueBtn, isArmOpen;
+int joyStickX, joyStickY, valueBtn, isGripperOpen;
+#ifdef ENABLE_GRIPPER_LOTTERY
+int gripperBtn, moveCounter, lotteryThreshold, lotteryPercentage;
+#endif
+
+void motor_backword() {
+  digitalWrite(TB6647PG_A_PIN, HIGH);
+  digitalWrite(TB6647PG_B_PIN, HIGH);
+  delay(MOTOR_DELAY_MS);
+
+  digitalWrite(TB6647PG_A_PIN, HIGH);
+  digitalWrite(TB6647PG_B_PIN, LOW);
+  delay(MOTOR_DELAY_MS);
+
+  digitalWrite(TB6647PG_A_PIN, LOW);
+  digitalWrite(TB6647PG_B_PIN, LOW);
+  delay(MOTOR_DELAY_MS);
+
+  digitalWrite(TB6647PG_A_PIN, LOW);
+  digitalWrite(TB6647PG_B_PIN, HIGH);
+  delay(MOTOR_DELAY_MS);
+}
+
+void motor_forword() {
+  digitalWrite(TB6647PG_A_PIN, HIGH);
+  digitalWrite(TB6647PG_B_PIN, HIGH);
+  delay(MOTOR_DELAY_MS);
+
+  digitalWrite(TB6647PG_A_PIN, LOW);
+  digitalWrite(TB6647PG_B_PIN, HIGH);
+  delay(MOTOR_DELAY_MS);
+
+  digitalWrite(TB6647PG_A_PIN, LOW);
+  digitalWrite(TB6647PG_B_PIN, LOW);
+  delay(MOTOR_DELAY_MS);
+
+  digitalWrite(TB6647PG_A_PIN, HIGH);
+  digitalWrite(TB6647PG_B_PIN, LOW);
+  delay(MOTOR_DELAY_MS);
+}
+
+void gripper_open() {
+  motor_servo.write(0);
+  isGripperOpen = 1;
+  delay(1000);
+}
+
+void gripper_close() {
+  motor_servo.write(180);
+  isGripperOpen = 0;
+  delay(1000);
+}
+
+void gripper_lottery() {
+  if (moveCounter == 0) {
+    lotteryThreshold =
+        random(GRIPPER_LOTTERY_THRESHOLD_MIN, GRIPPER_LOTTERY_THRESHOLD_MAX);
+  }
+  moveCounter++;
+  pixels.setPixelColor(
+      0, pixels.Color(255 - (((float)moveCounter / lotteryThreshold) * 255), 0,
+                      255));
+  if (moveCounter == lotteryThreshold) {
+    pixels.setPixelColor(0, COLOR_RED);
+    if (random(100) < lotteryPercentage) { // 0 ~ 99
+      gripper_open();
+    }
+  }
+}
 
 void setup() {
   Serial.begin(9600);
   pinMode(JOYSTICK_PUSH_PIN, INPUT_PULLUP);
 
-  pinMode(TB6647PG_1_S_PIN,OUTPUT);
-  pinMode(TB6647PG_2_S_PIN,OUTPUT);
-  pinMode(TB6647PG_A_PIN,OUTPUT);
-  pinMode(TB6647PG_B_PIN,OUTPUT);
+  pinMode(TB6647PG_1_S_PIN, OUTPUT);
+  pinMode(TB6647PG_2_S_PIN, OUTPUT);
+  pinMode(TB6647PG_A_PIN, OUTPUT);
+  pinMode(TB6647PG_B_PIN, OUTPUT);
+#ifdef ENABLE_GRIPPER_LOTTERY
+  pinMode(GRIP_DETECTI_PIN, INPUT_PULLDOWN);
+#endif
 
-  pixels.begin();
   motor_servo.attach(SERVO_PIN);
+  pixels.begin();
 
-  isArmOpen = 0;
-}
+  gripper_open();
 
-void motor_backword() {
-    digitalWrite(TB6647PG_A_PIN, HIGH);
-    digitalWrite(TB6647PG_B_PIN, HIGH);
-    delay(MOTOR_DELAY_MS);
+#ifdef ENABLE_GRIPPER_LOTTERY
+  joyStickX = analogRead(JOYSTICK_X_PIN);
 
-    digitalWrite(TB6647PG_A_PIN, HIGH);
-    digitalWrite(TB6647PG_B_PIN, LOW);
-    delay(MOTOR_DELAY_MS);
-
-    digitalWrite(TB6647PG_A_PIN, LOW);
-    digitalWrite(TB6647PG_B_PIN, LOW);
-    delay(MOTOR_DELAY_MS);
-
-    digitalWrite(TB6647PG_A_PIN, LOW);
-    digitalWrite(TB6647PG_B_PIN, HIGH);
-    delay(MOTOR_DELAY_MS);
-}
-
-void motor_forword() {
-    digitalWrite(TB6647PG_A_PIN, HIGH);
-    digitalWrite(TB6647PG_B_PIN, HIGH);
-    delay(MOTOR_DELAY_MS);
-
-    digitalWrite(TB6647PG_A_PIN, LOW);
-    digitalWrite(TB6647PG_B_PIN, HIGH);
-    delay(MOTOR_DELAY_MS);
-
-    digitalWrite(TB6647PG_A_PIN, LOW);
-    digitalWrite(TB6647PG_B_PIN, LOW);
-    delay(MOTOR_DELAY_MS);
-
-    digitalWrite(TB6647PG_A_PIN, HIGH);
-    digitalWrite(TB6647PG_B_PIN, LOW);
-    delay(MOTOR_DELAY_MS);
+  if (joyStickX > JOYSTICK_THRESHOLD_DOWN) { // DOWN
+    pixels.setPixelColor(0, COLOR_BLUE);
+    pixels.show();
+    lotteryPercentage = 0; // easy mode
+    delay(1000);
+  } else if (joyStickX < JOYSTICK_THRESHOLD_UP) { // UP
+    pixels.setPixelColor(0, COLOR_RED);
+    pixels.show();
+    lotteryPercentage = 80; // hard mode
+    delay(1000);
+  } else {
+    lotteryPercentage = 30; // normal mode
+  }
+#endif
 }
 
 void loop() {
-  valueX = analogRead(JOYSTICK_X_PIN);
-  valueY = analogRead(JOYSTICK_Y_PIN);
+  joyStickX = analogRead(JOYSTICK_X_PIN);
+  joyStickY = analogRead(JOYSTICK_Y_PIN);
   valueBtn = digitalRead(JOYSTICK_PUSH_PIN);
- 
-  if (valueX > 4050) { // UP
-    pixels.setPixelColor(0, pixels.Color(128, 0, 0));
+
+#ifdef ENABLE_GRIPPER_LOTTERY
+  gripperBtn = digitalRead(GRIP_DETECTI_PIN);
+#endif
+
+  if (joyStickX > JOYSTICK_THRESHOLD_DOWN) { // DOWN
+    pixels.setPixelColor(0, COLOR_RED);
     pixels.show();
 
     digitalWrite(TB6647PG_1_S_PIN, HIGH);
     digitalWrite(TB6647PG_2_S_PIN, LOW);
     motor_backword();
-  } else if (valueX < 300) { // DOWN
-    pixels.setPixelColor(0, pixels.Color(0, 0, 128));
+
+  } else if (joyStickX < JOYSTICK_THRESHOLD_UP) { // UP
+    pixels.setPixelColor(0, COLOR_BLUE);
+
+#ifdef ENABLE_GRIPPER_LOTTERY
+    if (gripperBtn == LOW) {
+      gripper_lottery();
+    }
+#endif
     pixels.show();
 
     digitalWrite(TB6647PG_1_S_PIN, HIGH);
     digitalWrite(TB6647PG_2_S_PIN, LOW);
     motor_forword();
-  } else if (valueY > 4050) { // RIGHT
-    pixels.setPixelColor(0, pixels.Color(128, 128, 128));
+  } else if (joyStickY > JOYSTICK_THRESHOLD_RIGHT) { // RIGHT
+    pixels.setPixelColor(0, COLOR_YELLOW);
+#ifdef ENABLE_GRIPPER_LOTTERY
+    if (gripperBtn == LOW) {
+      gripper_lottery();
+    }
+#endif
     pixels.show();
 
     digitalWrite(TB6647PG_1_S_PIN, LOW);
     digitalWrite(TB6647PG_2_S_PIN, HIGH);
     motor_backword();
-  } else if (valueY < 700) { // LEFT
-    pixels.setPixelColor(0, pixels.Color(0, 128, 0));
+  } else if (joyStickY < JOYSTICK_THRESHOLD_LEFT) { // LEFT
+    pixels.setPixelColor(0, COLOR_GREEN);
     pixels.show();
 
     digitalWrite(TB6647PG_1_S_PIN, LOW);
     digitalWrite(TB6647PG_2_S_PIN, HIGH);
     motor_forword();
   } else if (!valueBtn) {
-    pixels.setPixelColor(0, pixels.Color(128, 128, 0));
+    pixels.setPixelColor(0, COLOR_WHITE);
     pixels.show();
 
-    if (isArmOpen) {
-      motor_servo.write(0);
-    } else {
-      motor_servo.write(180);
-    }
-    isArmOpen = !isArmOpen;
-    delay(1000);
+    isGripperOpen ? gripper_close() : gripper_open();
   } else {
     digitalWrite(TB6647PG_1_S_PIN, LOW);
     digitalWrite(TB6647PG_2_S_PIN, LOW);
 
-    pixels.setPixelColor(0, pixels.Color(0, 0, 0));
+    pixels.setPixelColor(0, COLOR_NONE);
+#ifdef ENABLE_GRIPPER_LOTTERY
+    if (gripperBtn == HIGH && isGripperOpen) {
+      moveCounter = 0;
+      pixels.setPixelColor(0, COLOR_WHITE);
+    }
+#endif
     pixels.show();
-    delay(300);
+    delay(200);
   }
-
-
 }
