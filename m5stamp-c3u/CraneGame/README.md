@@ -18,7 +18,8 @@ CraneGame but it has only 2 axies.
 | Capacitor        | 470uF x 2, 0.1uF x 2 |
 | Joystick Module  | [ジョイスティックRKJXV122400R DIP化キット](https://akizukidenshi.com/catalog/g/g115433/) |
 | Linear DC/DC Regulator | [ROHM 5V BP5293-50](https://akizukidenshi.com/catalog/g/g111188/) |
-
+| Switch (SW1) | マイクロスイッチ |
+| Switch (SW2) | [タクトスイッチ](https://akizukidenshi.com/catalog/g/g103647/) |
 # 3D Printings
 
 * [Servo Gripper](https://www.thingiverse.com/thing:3056229)
