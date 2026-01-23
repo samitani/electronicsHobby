@@ -5,13 +5,13 @@
 #define M5LED_PIN 2
 #define SERVO_PIN 8
 
-#define JOYSTICK_PUSH_PIN 10
+#define PUSH_SWITCH_PIN 10
 #define JOYSTICK_X_PIN 0
 #define JOYSTICK_Y_PIN 1
 
-#define JOYSTICK_THRESHOLD_DOWN 4050
-#define JOYSTICK_THRESHOLD_UP 300
-#define JOYSTICK_THRESHOLD_LEFT 700
+#define JOYSTICK_THRESHOLD_DOWN 400
+#define JOYSTICK_THRESHOLD_UP 4050
+#define JOYSTICK_THRESHOLD_LEFT 400
 #define JOYSTICK_THRESHOLD_RIGHT 4050
 
 #define TB6647PG_1_S_PIN 3
@@ -21,7 +21,7 @@
 #define MOTOR_DELAY_MS 3
 
 #ifdef ENABLE_GRIPPER_LOTTERY
-#define GRIP_DETECTI_PIN 20
+#define GRIP_DETECT_PIN 7
 #define GRIPPER_LOTTERY_THRESHOLD_MIN 400
 #define GRIPPER_LOTTERY_THRESHOLD_MAX 1000
 #endif
@@ -107,14 +107,14 @@ void gripper_lottery() {
 
 void setup() {
   Serial.begin(9600);
-  pinMode(JOYSTICK_PUSH_PIN, INPUT_PULLUP);
+  pinMode(PUSH_SWITCH_PIN, INPUT_PULLDOWN);
 
   pinMode(TB6647PG_1_S_PIN, OUTPUT);
   pinMode(TB6647PG_2_S_PIN, OUTPUT);
   pinMode(TB6647PG_A_PIN, OUTPUT);
   pinMode(TB6647PG_B_PIN, OUTPUT);
 #ifdef ENABLE_GRIPPER_LOTTERY
-  pinMode(GRIP_DETECTI_PIN, INPUT_PULLDOWN);
+  pinMode(GRIP_DETECT_PIN, INPUT_PULLDOWN);
 #endif
 
   motor_servo.attach(SERVO_PIN);
@@ -123,14 +123,14 @@ void setup() {
   gripper_open();
 
 #ifdef ENABLE_GRIPPER_LOTTERY
-  joyStickX = analogRead(JOYSTICK_X_PIN);
+  joyStickY = analogRead(JOYSTICK_Y_PIN);
 
-  if (joyStickX > JOYSTICK_THRESHOLD_DOWN) { // DOWN
+  if (joyStickY < JOYSTICK_THRESHOLD_DOWN) { // DOWN
     pixels.setPixelColor(0, COLOR_BLUE);
     pixels.show();
     lotteryPercentage = 0; // easy mode
     delay(1000);
-  } else if (joyStickX < JOYSTICK_THRESHOLD_UP) { // UP
+  } else if (joyStickY > JOYSTICK_THRESHOLD_UP) { // UP
     pixels.setPixelColor(0, COLOR_RED);
     pixels.show();
     lotteryPercentage = 80; // hard mode
@@ -144,34 +144,13 @@ void setup() {
 void loop() {
   joyStickX = analogRead(JOYSTICK_X_PIN);
   joyStickY = analogRead(JOYSTICK_Y_PIN);
-  valueBtn = digitalRead(JOYSTICK_PUSH_PIN);
+  valueBtn = digitalRead(PUSH_SWITCH_PIN);
 
 #ifdef ENABLE_GRIPPER_LOTTERY
-  gripperBtn = digitalRead(GRIP_DETECTI_PIN);
+  gripperBtn = digitalRead(GRIP_DETECT_PIN);
 #endif
 
-  if (joyStickX > JOYSTICK_THRESHOLD_DOWN) { // DOWN
-    pixels.setPixelColor(0, COLOR_RED);
-    pixels.show();
-
-    digitalWrite(TB6647PG_1_S_PIN, HIGH);
-    digitalWrite(TB6647PG_2_S_PIN, LOW);
-    motor_backword();
-
-  } else if (joyStickX < JOYSTICK_THRESHOLD_UP) { // UP
-    pixels.setPixelColor(0, COLOR_BLUE);
-
-#ifdef ENABLE_GRIPPER_LOTTERY
-    if (gripperBtn == LOW) {
-      gripper_lottery();
-    }
-#endif
-    pixels.show();
-
-    digitalWrite(TB6647PG_1_S_PIN, HIGH);
-    digitalWrite(TB6647PG_2_S_PIN, LOW);
-    motor_forword();
-  } else if (joyStickY > JOYSTICK_THRESHOLD_RIGHT) { // RIGHT
+  if (joyStickX > JOYSTICK_THRESHOLD_RIGHT) { // RIGHT
     pixels.setPixelColor(0, COLOR_YELLOW);
 #ifdef ENABLE_GRIPPER_LOTTERY
     if (gripperBtn == LOW) {
@@ -183,14 +162,33 @@ void loop() {
     digitalWrite(TB6647PG_1_S_PIN, LOW);
     digitalWrite(TB6647PG_2_S_PIN, HIGH);
     motor_backword();
-  } else if (joyStickY < JOYSTICK_THRESHOLD_LEFT) { // LEFT
+  } else if (joyStickX < JOYSTICK_THRESHOLD_LEFT) { // LEFT
     pixels.setPixelColor(0, COLOR_GREEN);
     pixels.show();
 
     digitalWrite(TB6647PG_1_S_PIN, LOW);
     digitalWrite(TB6647PG_2_S_PIN, HIGH);
     motor_forword();
-  } else if (!valueBtn) {
+  } else if (joyStickY > JOYSTICK_THRESHOLD_UP) { // UP
+    pixels.setPixelColor(0, COLOR_BLUE);
+#ifdef ENABLE_GRIPPER_LOTTERY
+    if (gripperBtn == LOW) {
+      gripper_lottery();
+    }
+#endif
+    pixels.show();
+
+    digitalWrite(TB6647PG_1_S_PIN, HIGH);
+    digitalWrite(TB6647PG_2_S_PIN, LOW);
+    motor_forword();
+  } else if (joyStickY < JOYSTICK_THRESHOLD_DOWN) { // DOWN
+    pixels.setPixelColor(0, COLOR_RED);
+    pixels.show();
+
+    digitalWrite(TB6647PG_1_S_PIN, HIGH);
+    digitalWrite(TB6647PG_2_S_PIN, LOW);
+    motor_backword();
+  } else if (valueBtn) {
     pixels.setPixelColor(0, COLOR_WHITE);
     pixels.show();
 
