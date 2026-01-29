@@ -41,13 +41,13 @@ void updateDisplay() {
 // 抽選アニメーションと判定
 void runLottery() {
   display.clearDisplay();
-  display.setTextSize(2);
+  display.setTextSize(3);
   
   // アニメーション（簡易演出）
   for (int i = 0; i < 3; i++) {
     display.clearDisplay();
-    display.setCursor(20, 25);
-    display.print("GOGO...  ");
+    display.setCursor(0, 15);
+    display.print("GOGO..");
     display.display();
     delay(300);
     display.print("!");
@@ -59,19 +59,24 @@ void runLottery() {
   int result = random(0, 3); 
   display.clearDisplay();
   
-  if (result == 0) { // 「0」を当たりとする
-    display.setCursor(20, 10);
+  if (1 || result == 0) { // 「0」を当たりとする
+    display.setCursor(0, 10);
     display.setTextSize(3);
     display.println("ATARI!!");
-    display.setTextSize(1);
-    display.println("  CONGRATS!");
+    display.display();
+    delay(2000);
+
+    display.clearDisplay();
+    //display.setCursor(0, 0);
     // 簡易的な火花アニメーション
     for(int i=0; i<10; i++){
-      display.drawCircle(64, 40, i*3, SSD1306_WHITE);
+      display.drawCircle(64, 32, i*3, SSD1306_WHITE);
       display.display();
+      delay(100);
     }
+    delay(5000);
   } else {
-    display.setCursor(20, 25);
+    display.setCursor(0, 10);
     display.setTextSize(2);
     display.println("HAZURE...");
   }
@@ -97,6 +102,7 @@ void setup() {
   
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
+
   updateDisplay();
 }
 
