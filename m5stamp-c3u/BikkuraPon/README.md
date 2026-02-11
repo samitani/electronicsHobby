@@ -1,5 +1,6 @@
 # What
-
+びっくらポンもどき
+お皿を入れると、抽選。当たると、カプセルトイが出るよ。
 
 # Parts
 
@@ -16,6 +17,9 @@
 
 
 # 3D Printings
+
+* [3D models](./3d/)
+* [Capsule 40mm](https://makerworld.com/ja/models/2265124-gacha-vending-capsules-multiple-sizes-styles)
 
 # Circuit
 
