@@ -2,6 +2,10 @@
 びっくらポンもどき
 お皿を入れると、抽選。当たると、カプセルトイが出るよ。
 
+![movie](images/movie.gif)
+
+![circuitphoto](images/photo_circuit.jpg)
+
 # Parts
 
 
