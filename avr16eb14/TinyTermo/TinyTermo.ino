@@ -1,7 +1,6 @@
 // TODO
-// Sleep
+// RTC
 // BatteryADC
-// EPPROM
 // AHT20 Error and Retry
 
 #include <avr/sleep.h>
@@ -56,6 +55,11 @@ float minTemp;
 bool lastButtonState = HIGH;
 unsigned long buttonPressTime = 0;
 bool buttonHandled = false;
+volatile bool wakeFlag = false;
+
+void wakeUp() {
+  wakeFlag = true;
+}
 
 unsigned long modeStartTime = 0;
 
@@ -121,8 +125,11 @@ void saveTempMinMax() {
 }
 
 void setup() {
-  pinMode(PIN_LED, OUTPUT);
   //Serial.begin(115200);
+
+#ifdef DEBUG
+  pinMode(PIN_LED, OUTPUT);
+#endif
 
   // Button
   pinMode(BUTTON_PIN, INPUT_PULLUP);
@@ -140,6 +147,12 @@ void setup() {
   display.setBrightness(0, false);
 
   loadTempMinMax();
+
+  attachInterrupt(
+    digitalPinToInterrupt(BUTTON_PIN),
+    wakeUp,
+    FALLING
+  );
 }
 
 void loop() {
@@ -187,6 +200,12 @@ void loop() {
 
   lastButtonState = buttonState;
 
+  if (mode == MODE_OFF) {
+    set_sleep_mode(SLEEP_MODE_STANDBY);
+  } else {
+    set_sleep_mode(SLEEP_MODE_IDLE);
+  }
+
   switch (mode) {
   case MODE_OFF:
     if (mode != lastMode) {
@@ -230,6 +249,5 @@ void loop() {
     break;
   }
 
-  set_sleep_mode(SLEEP_MODE_IDLE);
   sleep_mode();
 }
