@@ -1,5 +1,7 @@
 // TODO
-// AHT20 Error and Retry
+// AHT20 getTemperature error handling
+// AHT20 vs Analog sensor
+// sensor calibration
 
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
@@ -10,7 +12,10 @@
 #include <AHT20.h>
 #include <TM1637Display.h>
 
+#ifdef DEGUG
 #define PIN_LED PIN_PD6
+#endif
+
 // --------------------
 // TM1637
 // --------------------
@@ -18,6 +23,7 @@
 #define PIN_DIO PIN_PC1
 
 #define CHAR_NONE 0x00
+#define CHAR_E SEG_A | SEG_D | SEG_E | SEG_F | SEG_G
 #define CHAR_L SEG_D | SEG_E | SEG_F
 #define CHAR_H SEG_B | SEG_C | SEG_E | SEG_F | SEG_G
 #define CHAR_BAR SEG_G
@@ -148,6 +154,19 @@ void showTemperature(uint8_t chara, float temp) {
   display.setSegments(data);
 }
 
+void showErrorCode(uint8_t code) {
+  uint8_t data[4];
+
+  data[0] = CHAR_E;
+  data[1] = CHAR_BAR;
+
+  data[2] = display.encodeDigit((code / 10) % 10);
+  data[3] = display.encodeDigit(code % 10);
+
+  display.setBrightness(1, true);
+  display.setSegments(data);
+}
+
 void showClear() {
   uint8_t data[] = {SEG_A | SEG_D | SEG_E | SEG_F, // C
                     SEG_D | SEG_E | SEG_F,         // L
@@ -220,14 +239,17 @@ void setup() {
   // Button
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
+
+  // AHT20初期化
   // Begin I2C for AHT20
   Wire.swap(2);
   Wire.begin();
-
-  // AHT20初期化
-  do {
-    delay(1000);
-  } while (aht20.begin() != true);
+  delay(1000);
+  if (!aht20.begin()) {
+    showErrorCode(1);
+    set_sleep_mode(SLEEP_MODE_STANDBY);
+    sleep_mode();
+  }
 
   display.clear();
   display.setBrightness(0, false);
