@@ -1,5 +1,4 @@
 // TODO
-// BatteryADC
 // AHT20 Error and Retry
 
 #include <avr/interrupt.h>
@@ -25,7 +24,7 @@
 
 TM1637Display display(PIN_CLK, PIN_DIO);
 
-enum DisplayMode { MODE_OFF, MODE_CURRENT, MODE_LOW, MODE_HIGH, MODE_BATT };
+enum DisplayMode { MODE_OFF, MODE_CURRENT, MODE_LOW, MODE_HIGH, MODE_BATT, MODE_CLEAR };
 
 DisplayMode mode = MODE_OFF;
 DisplayMode lastMode = MODE_HIGH;
@@ -39,7 +38,6 @@ DisplayMode lastMode = MODE_HIGH;
 
 AHT20 aht20;
 
-float currentTemp;
 float maxTemp;
 float minTemp;
 
@@ -64,14 +62,18 @@ ISR(RTC_PIT_vect) {
   tickCount++;
 }
 
-// interval about 8s
 void setRtcPeriodSlow() {
   while (RTC.PITSTATUS & RTC_CTRLBUSY_bm)
     ;
   RTC.PITCTRLA = 0;
   while (RTC.PITSTATUS & RTC_CTRLBUSY_bm)
     ;
-  RTC.PITCTRLA = RTC_PERIOD_CYC8192_gc | RTC_PITEN_bm;
+
+  // interval about 8s
+  // RTC.PITCTRLA = RTC_PERIOD_CYC8192_gc | RTC_PITEN_bm;
+
+  // interval about 32s
+  RTC.PITCTRLA = RTC_PERIOD_CYC32768_gc | RTC_PITEN_bm;
 }
 
 void setRtcPeriodFast() {
@@ -103,6 +105,23 @@ void RTCInit() {
 void wakeUp() {}
 
 unsigned long modeStartTick = 0;
+
+
+uint16_t getVccMillivolts() {
+  // 1. 基準電圧（Reference）を「内部1.024V」に設定
+  analogReference(INTERNAL1V024);
+
+  // 2. 入力チャンネルに「VDDの10分の一」を指定してアナログ読み取り
+  // ※1MHz駆動のため、DxCoreが自動的に適切なADCクロック（分周）で処理してくれます。
+  int reading = analogRead(ADC_VDDDIV10);
+
+  if (reading == 0) return 0;
+
+  // 3. 電圧(mV)の逆算
+  uint32_t vcc_mv = ((uint32_t)reading * 10240UL) / 1023UL;
+
+  return (uint16_t)vcc_mv;
+}
 
 void showTemperature(uint8_t chara, float temp) {
   int value;
@@ -137,13 +156,18 @@ void showClear() {
 
   display.setBrightness(1, true);
   display.setSegments(data);
-  delay(5000);
-  display.clear();
 }
 
-void showBatteryLevel(int voltage) {
+void showBatteryLevel(int value) {
+  /*
   uint8_t data[] = {SEG_C | SEG_D | SEG_E | SEG_F | SEG_G, // b
                     CHAR_BAR, CHAR_BAR, CHAR_NONE};
+  */
+  uint8_t data[4];
+  data[0] = display.encodeDigit((value / 1000) % 10);
+  data[1] = display.encodeDigit((value / 100) % 10);
+  data[2] = display.encodeDigit((value / 10) % 10);
+  data[3] = display.encodeDigit((value) % 10);
 
   display.setBrightness(1, true);
   display.setSegments(data);
@@ -170,13 +194,13 @@ void clearTempMinMax() {
 void updateTempMinMax(float current) {
   bool updated = false;
 
-  if (currentTemp > maxTemp) {
-    maxTemp = currentTemp;
+  if (current > maxTemp) {
+    maxTemp = current;
     updated = true;
   }
 
-  if (currentTemp < minTemp) {
-    minTemp = currentTemp;
+  if (current < minTemp) {
+    minTemp = current;
     updated = true;
   }
 
@@ -221,8 +245,7 @@ void loop() {
   interrupts();
 
   if (mode == MODE_OFF && currentTick % 2 == 0) {
-    currentTemp = aht20.getTemperature();
-    updateTempMinMax(currentTemp);
+    updateTempMinMax(aht20.getTemperature());
   }
 
   bool buttonState = digitalRead(BUTTON_PIN);
@@ -237,9 +260,7 @@ void loop() {
 
     // long press
     if (!buttonHandled && (currentTick - buttonPressTick >= 40)) {
-      clearTempMinMax();
-      showClear();
-      mode = MODE_OFF;
+      mode = MODE_CLEAR;
       buttonHandled = true;
     }
   } else { // HIGH
@@ -257,11 +278,11 @@ void loop() {
     if (mode != lastMode) {
       lastMode = mode;
       modeStartTick = currentTick;
-      currentTemp = aht20.getTemperature();
+      float currentTemp = aht20.getTemperature();
       updateTempMinMax(currentTemp);
+      showTemperature(CHAR_NONE, currentTemp);
       setRtcPeriodFast();
     }
-    showTemperature(CHAR_NONE, currentTemp);
 
     if (currentTick - modeStartTick >= 24) {
       mode = MODE_LOW;
@@ -271,8 +292,8 @@ void loop() {
     if (mode != lastMode) {
       lastMode = mode;
       modeStartTick = currentTick;
+      showTemperature(CHAR_L, minTemp);
     }
-    showTemperature(CHAR_L, minTemp);
     if (currentTick - modeStartTick >= 24) {
       mode = MODE_HIGH;
     }
@@ -281,8 +302,8 @@ void loop() {
     if (mode != lastMode) {
       lastMode = mode;
       modeStartTick = currentTick;
+      showTemperature(CHAR_H, maxTemp);
     }
-    showTemperature(CHAR_H, maxTemp);
     if (currentTick - modeStartTick >= 24) {
       mode = MODE_BATT;
     }
@@ -291,20 +312,32 @@ void loop() {
     if (mode != lastMode) {
       lastMode = mode;
       modeStartTick = currentTick;
+      showBatteryLevel(getVccMillivolts());
     }
-    showBatteryLevel(100);
     if (currentTick - modeStartTick >= 24) {
       mode = MODE_OFF;
     }
     break;
   case MODE_OFF:
     if (mode != lastMode) {
+      lastMode = mode;
+      modeStartTick = currentTick;
       display.setBrightness(0, false);
       display.clear();
       setRtcPeriodSlow();
     }
-    lastMode = mode;
     break;
+  case MODE_CLEAR:
+    if (mode != lastMode) {
+      lastMode = mode;
+      modeStartTick = currentTick;
+      clearTempMinMax();
+      showClear();
+      setRtcPeriodFast();
+    }
+    if (currentTick - modeStartTick >= 48) {
+      mode = MODE_OFF;
+    }
   }
 
   set_sleep_mode(SLEEP_MODE_STANDBY);
