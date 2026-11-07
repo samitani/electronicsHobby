@@ -9,7 +9,7 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LED Shoot - Timing Game</title>
+    <title>LED Shoot</title>
     <style>
         * {
             box-sizing: border-box;
@@ -41,7 +41,7 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             border-bottom: 1px solid #2d3345;
         }
         .title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             letter-spacing: 0.5px;
             color: #00d2ff;
@@ -59,35 +59,63 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             background: #2ed573;
         }
 
+        /* モード選択タブ */
+        .mode-tabs {
+            display: flex;
+            background: #141824;
+            padding: 6px 12px;
+            gap: 8px;
+            border-bottom: 1px solid #2d3345;
+        }
+        .tab-btn {
+            flex: 1;
+            background: #1f2535;
+            border: 1px solid #363e52;
+            color: #8f9bb3;
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #00d2ff, #0077b6);
+            color: #ffffff;
+            border-color: #00d2ff;
+            box-shadow: 0 2px 8px rgba(0, 210, 255, 0.35);
+        }
+
         /* ダッシュボードエリア */
         .dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
-            padding: 10px 16px;
+            padding: 8px 14px;
             background: #161a24;
             border-bottom: 1px solid #2d3345;
         }
         .card {
             background: #202636;
-            padding: 8px 10px;
+            padding: 6px 8px;
             border-radius: 8px;
             text-align: center;
         }
         .card .label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #8f9bb3;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         .card .value {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 800;
             color: #ffffff;
         }
         .life-value {
             color: #ff4757 !important;
             letter-spacing: 2px;
+            font-size: 1.05rem !important;
         }
 
         /* メイン通知・コントロールエリア */
@@ -97,11 +125,11 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 12px;
+            padding: 8px 12px;
             position: relative;
         }
         .game-status-text {
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             font-weight: 800;
             margin-bottom: 12px;
             text-align: center;
@@ -110,19 +138,19 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
         }
         .game-status-text.hit {
             color: #2ed573;
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
         .game-status-text.miss {
             color: #ff4757;
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
         .btn-action {
             background: linear-gradient(135deg, #00d2ff, #0056b3);
             color: white;
             border: none;
-            padding: 14px 36px;
+            padding: 12px 34px;
             border-radius: 30px;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 700;
             box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
             cursor: pointer;
@@ -137,10 +165,10 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
         .controls {
             display: flex;
             gap: 12px;
-            padding: 14px 16px;
-            padding-bottom: calc(18px + env(safe-area-inset-bottom, 20px));
-            height: 35%;
-            min-height: 160px;
+            padding: 12px 14px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 20px));
+            height: 34%;
+            min-height: 150px;
             max-height: 240px;
             background: #161a24;
             border-top: 1px solid #2d3345;
@@ -149,7 +177,7 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             flex: 1;
             border: none;
             border-radius: 16px;
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 900;
             color: white;
             cursor: pointer;
@@ -157,13 +185,13 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+            box-shadow: 0 5px 0 rgba(0,0,0,0.4);
             transition: transform 0.05s, box-shadow 0.05s, filter 0.1s;
             outline: none;
         }
         .btn-color:active {
             transform: translateY(4px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.4);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.4);
             filter: brightness(1.2);
         }
         .btn-red {
@@ -179,9 +207,14 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
 </head>
 <body>
     <header>
-        <div class="title">LEDShoot : TIMING GAME</div>
+        <div id="pageTitle" class="title">LEDShoot : TIMING</div>
         <div id="wsStatus" class="status-badge">Offline</div>
     </header>
+
+    <div class="mode-tabs">
+        <button id="tabTiming" class="tab-btn active">⏱️ TIMING</button>
+        <button id="tabShooting" class="tab-btn">🎯 SHOOTING</button>
+    </div>
 
     <div class="dashboard">
         <div class="card">
@@ -192,8 +225,8 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             <div class="label">STREAK</div>
             <div id="streakVal" class="value">0</div>
         </div>
-        <div class="card">
-            <div class="label">LIFE</div>
+        <div class="card" id="lifeCard">
+            <div id="lifeLabel" class="label">LIFE</div>
             <div id="lifeVal" class="value life-value">❤️❤️❤️</div>
         </div>
     </div>
@@ -212,10 +245,16 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
     <script>
         let ws = null;
         let isPlaying = false;
+        let currentMode = "TIMING"; // "TIMING" or "SHOOTING"
 
         const wsStatus = document.getElementById('wsStatus');
+        const pageTitle = document.getElementById('pageTitle');
+        const tabTiming = document.getElementById('tabTiming');
+        const tabShooting = document.getElementById('tabShooting');
+
         const scoreVal = document.getElementById('scoreVal');
         const streakVal = document.getElementById('streakVal');
+        const lifeLabel = document.getElementById('lifeLabel');
         const lifeVal = document.getElementById('lifeVal');
         const statusText = document.getElementById('statusText');
         const actionBtn = document.getElementById('actionBtn');
@@ -223,6 +262,31 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
         const btnRed = document.getElementById('btnRed');
         const btnGreen = document.getElementById('btnGreen');
         const btnBlue = document.getElementById('btnBlue');
+
+        function setMode(mode) {
+            currentMode = mode;
+            if (mode === "TIMING") {
+                tabTiming.classList.add('active');
+                tabShooting.classList.remove('active');
+                pageTitle.textContent = "LEDShoot : TIMING";
+                lifeLabel.textContent = "LIFE";
+                lifeVal.textContent = "❤️❤️❤️";
+                statusText.textContent = isPlaying ? "WATCH THE TARGET!" : "TAP START TO PLAY";
+            } else {
+                tabShooting.classList.add('active');
+                tabTiming.classList.remove('active');
+                pageTitle.textContent = "LEDShoot : SHOOTING";
+                lifeLabel.textContent = "CONDITION";
+                lifeVal.textContent = "1HIT KO💀";
+                statusText.textContent = isPlaying ? "SHOOT SAME COLOR!" : "TAP START TO PLAY";
+            }
+            scoreVal.textContent = "0";
+            streakVal.textContent = "0";
+            sendCommand("SET_MODE " + mode);
+        }
+
+        tabTiming.addEventListener('click', () => setMode("TIMING"));
+        tabShooting.addEventListener('click', () => setMode("SHOOTING"));
 
         function connectWebSocket() {
             const host = window.location.hostname || "192.168.1.100";
@@ -261,7 +325,7 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
                     if (msg.val === 1) {
                         isPlaying = true;
                         actionBtn.style.display = "none";
-                        statusText.textContent = "WATCH THE LED!";
+                        statusText.textContent = (currentMode === "TIMING") ? "WATCH THE TARGET!" : "FIRE AT ENEMIES!";
                         statusText.className = "game-status-text";
                     } else if (msg.val === 2) {
                         isPlaying = false;
@@ -284,23 +348,25 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
                     streakVal.textContent = msg.val;
                     break;
                 case "LIFE_UPDATE":
-                    let hearts = "";
-                    for (let i = 0; i < msg.val; i++) hearts += "❤️";
-                    for (let i = msg.val; i < 3; i++) hearts += "🖤";
-                    lifeVal.textContent = hearts;
+                    if (currentMode === "TIMING") {
+                        let hearts = "";
+                        for (let i = 0; i < msg.val; i++) hearts += "❤️";
+                        for (let i = msg.val; i < 3; i++) hearts += "🖤";
+                        lifeVal.textContent = hearts;
+                    }
                     break;
                 case "HIT":
                     statusText.textContent = "HIT! +" + msg.val;
                     statusText.className = "game-status-text hit";
-                    if (navigator.vibrate) navigator.vibrate(40);
+                    if (navigator.vibrate) navigator.vibrate(35);
                     break;
                 case "MISS":
                     statusText.textContent = "MISS!";
                     statusText.className = "game-status-text miss";
-                    if (navigator.vibrate) navigator.vibrate(120);
+                    if (navigator.vibrate) navigator.vibrate(100);
                     break;
                 case "GAME_OVER":
-                    statusText.textContent = `FINAL SCORE: ${msg.val} (MAX: ${msg.v2})`;
+                    statusText.textContent = `FINAL: ${msg.val} (MAX: ${msg.v2})`;
                     statusText.className = "game-status-text miss";
                     actionBtn.textContent = "RESTART";
                     actionBtn.style.display = "block";
@@ -335,7 +401,6 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             }
         });
 
-        // 起動時WebSocket接続開始
         window.addEventListener('DOMContentLoaded', connectWebSocket);
     </script>
 </body>
