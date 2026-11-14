@@ -86,7 +86,24 @@ void illumination_init(illumination_t* illumi, int led_count) {
     // 暖炉ヒートバッファ初期化
     for (int i = 0; i < illumi->led_count; i++) {
         illumi->fire_heat[i] = 0;
+        illumi->champagne_sparkle[i] = 0.0f;
     }
+
+    // 流れ星の初期化
+    for (int m = 0; m < MAX_METEORS; m++) {
+        illumi->meteors[m].active = false;
+        illumi->meteors[m].position = 0.0f;
+        illumi->meteors[m].speed = 30.0f;
+        illumi->meteors[m].length = 10.0f;
+        illumi->meteors[m].color_type = (uint8_t)m;
+        illumi->meteors[m].wait_timer_ms = (uint32_t)(m * 800 + 200);
+    }
+
+    // サンタのソリの初期化
+    illumi->sleigh.active = true;
+    illumi->sleigh.position = 0.0f;
+    illumi->sleigh.speed = 22.0f;
+    illumi->sleigh.wait_timer_ms = 0;
 }
 
 void illumination_set_pattern(illumination_t* illumi, illumi_pattern_t pattern) {
@@ -123,6 +140,9 @@ const char* illumination_get_pattern_name(illumi_pattern_t pattern) {
         case PATTERN_AURORA:       return "Silent Night Aurora";
         case PATTERN_FIREPLACE:    return "Cozy Fireplace";
         case PATTERN_RAINBOW:      return "Holiday Rainbow";
+        case PATTERN_CHAMPAGNE:    return "Champagne Sparkle";
+        case PATTERN_METEOR:       return "Holiday Meteor";
+        case PATTERN_SANTA:        return "Santa's Sleigh";
         default:                   return "Unknown";
     }
 }
@@ -179,6 +199,56 @@ void illumination_update(illumination_t* illumi, uint32_t current_time_ms) {
             int heat = 180 + rand() % 75;
             if (spark < n) {
                 illumi->fire_heat[spark] = (uint8_t)heat;
+            }
+        }
+    } else if (illumi->pattern == PATTERN_CHAMPAGNE) {
+        // シャンパンスパークルの減衰と泡の生成
+        for (int i = 0; i < illumi->led_count; i++) {
+            if (illumi->champagne_sparkle[i] > 0.0f) {
+                illumi->champagne_sparkle[i] -= dt * 2.8f * illumi->speed_factor;
+                if (illumi->champagne_sparkle[i] < 0.0f) illumi->champagne_sparkle[i] = 0.0f;
+            }
+        }
+        if (rand() % 100 < 35) {
+            int idx = rand() % illumi->led_count;
+            illumi->champagne_sparkle[idx] = 1.0f;
+        }
+    } else if (illumi->pattern == PATTERN_METEOR) {
+        // 流れ星の移動と再出現
+        for (int m = 0; m < MAX_METEORS; m++) {
+            if (illumi->meteors[m].active) {
+                illumi->meteors[m].position += illumi->meteors[m].speed * dt * illumi->speed_factor;
+                if (illumi->meteors[m].position - illumi->meteors[m].length >= (float)illumi->led_count) {
+                    illumi->meteors[m].active = false;
+                    illumi->meteors[m].wait_timer_ms = 400 + (rand() % 1200);
+                }
+            } else {
+                if (illumi->meteors[m].wait_timer_ms > delta_ms) {
+                    illumi->meteors[m].wait_timer_ms -= delta_ms;
+                } else {
+                    illumi->meteors[m].active = true;
+                    illumi->meteors[m].position = 0.0f;
+                    illumi->meteors[m].speed = 28.0f + (float)(rand() % 16);
+                    illumi->meteors[m].length = 8.0f + (float)(rand() % 6);
+                    illumi->meteors[m].color_type = (uint8_t)(rand() % 2);
+                }
+            }
+        }
+    } else if (illumi->pattern == PATTERN_SANTA) {
+        // サンタのソリの飛行と再出現
+        if (illumi->sleigh.active) {
+            illumi->sleigh.position += illumi->sleigh.speed * dt * illumi->speed_factor;
+            if (illumi->sleigh.position - 18.0f >= (float)illumi->led_count) {
+                illumi->sleigh.active = false;
+                illumi->sleigh.wait_timer_ms = 1800; // 1.8秒のインターバル
+            }
+        } else {
+            if (illumi->sleigh.wait_timer_ms > delta_ms) {
+                illumi->sleigh.wait_timer_ms -= delta_ms;
+            } else {
+                illumi->sleigh.active = true;
+                illumi->sleigh.position = 0.0f;
+                illumi->sleigh.speed = 20.0f + (float)(rand() % 8);
             }
         }
     }
@@ -291,6 +361,104 @@ void illumination_render(const illumination_t* illumi, rgb_color_t* led_buffer, 
             for (int i = 0; i < n; i++) {
                 float hue = fmodf((float)i * 6.0f + illumi->anim_phase * 50.0f, 360.0f);
                 led_buffer[i] = hsv_to_rgb(hue, 1.0f, 0.9f);
+            }
+            break;
+        }
+
+        case PATTERN_CHAMPAGNE: {
+            // シャンパンゴールドと気泡のスパークル
+            for (int i = 0; i < n; i++) {
+                float base_wave = 0.7f + 0.3f * sinf(illumi->anim_phase * 1.5f + (float)i * 0.4f);
+                float spk = illumi->champagne_sparkle[i]; // 0.0 - 1.0
+
+                // ベース: 穏やかなウォームゴールド (32, 24, 7)
+                // スパークル: きらめく白金 (255, 220, 110)
+                uint8_t r = (uint8_t)((32.0f * base_wave) + (223.0f * spk));
+                uint8_t g = (uint8_t)((24.0f * base_wave) + (196.0f * spk));
+                uint8_t b = (uint8_t)((7.0f  * base_wave) + (103.0f * spk));
+                led_buffer[i] = (rgb_color_t){r, g, b};
+            }
+            break;
+        }
+
+        case PATTERN_METEOR: {
+            // 静寂な冬の夜空 (濃紺)
+            for (int i = 0; i < n; i++) {
+                led_buffer[i] = (rgb_color_t){0, 1, 4};
+            }
+            // 流れ星の描画 (先頭は白、尾はゴールド/アイスブルー)
+            for (int m = 0; m < MAX_METEORS; m++) {
+                if (illumi->meteors[m].active) {
+                    float head = illumi->meteors[m].position;
+                    float len = illumi->meteors[m].length;
+                    uint8_t ctype = illumi->meteors[m].color_type;
+
+                    for (int i = 0; i < n; i++) {
+                        float dist = head - (float)i;
+                        if (dist >= 0.0f && dist <= len) {
+                            float decay = 1.0f - (dist / len);
+                            decay = decay * decay; // 2乗減衰
+
+                            uint8_t mr, mg, mb;
+                            if (dist < 1.0f) {
+                                mr = 255; mg = 255; mb = 255; // 先頭は純白
+                            } else if (ctype == 0) {
+                                // ゴールド流星
+                                mr = (uint8_t)(255 * decay);
+                                mg = (uint8_t)(190 * decay);
+                                mb = (uint8_t)(40 * decay);
+                            } else {
+                                // アイスブルー流星
+                                mr = (uint8_t)(120 * decay);
+                                mg = (uint8_t)(220 * decay);
+                                mb = (uint8_t)(255 * decay);
+                            }
+                            // 加算合成
+                            int tr = led_buffer[i].r + mr;
+                            int tg = led_buffer[i].g + mg;
+                            int tb = led_buffer[i].b + mb;
+                            led_buffer[i].r = (tr > 255) ? 255 : (uint8_t)tr;
+                            led_buffer[i].g = (tg > 255) ? 255 : (uint8_t)tg;
+                            led_buffer[i].b = (tb > 255) ? 255 : (uint8_t)tb;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+
+        case PATTERN_SANTA: {
+            // 夜空のベース
+            for (int i = 0; i < n; i++) {
+                led_buffer[i] = (rgb_color_t){0, 2, 8};
+            }
+            if (illumi->sleigh.active) {
+                float p = illumi->sleigh.position;
+                for (int i = 0; i < n; i++) {
+                    float dist = p - (float)i;
+                    if (dist >= 0.0f && dist < 1.0f) {
+                        // 先頭: 赤鼻のルドルフ (ピカピカ点滅)
+                        float blink = 0.75f + 0.25f * sinf(illumi->anim_phase * 20.0f);
+                        led_buffer[i] = (rgb_color_t){(uint8_t)(255 * blink), 0, 0};
+                    } else if (dist >= 1.0f && dist < 3.0f) {
+                        // トナカイの鈴 (ゴールド)
+                        led_buffer[i] = (rgb_color_t){255, 190, 20};
+                    } else if (dist >= 3.0f && dist < 5.0f) {
+                        // サンタのソリ (真紅)
+                        led_buffer[i] = (rgb_color_t){240, 15, 20};
+                    } else if (dist >= 5.0f && dist < 18.0f) {
+                        // 魔法の星屑トレイル (エメラルド＆ゴールドのきらめき)
+                        float decay = 1.0f - ((dist - 5.0f) / 13.0f);
+                        float spk = 0.5f + 0.5f * sinf((float)i * 3.5f + illumi->anim_phase * 15.0f);
+                        float intensity = decay * spk;
+
+                        if (i % 2 == 0) {
+                            led_buffer[i] = (rgb_color_t){(uint8_t)(255 * intensity), (uint8_t)(210 * intensity), (uint8_t)(40 * intensity)};
+                        } else {
+                            led_buffer[i] = (rgb_color_t){(uint8_t)(20 * intensity), (uint8_t)(255 * intensity), (uint8_t)(100 * intensity)};
+                        }
+                    }
+                }
             }
             break;
         }

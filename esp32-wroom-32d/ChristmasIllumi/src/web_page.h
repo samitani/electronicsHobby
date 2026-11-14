@@ -118,31 +118,37 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             margin-bottom: -6px;
         }
 
-        /* パターン選択グリッド */
+        /* パターン選択グリッド (3列) */
         .pattern-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
         }
         .pattern-btn {
             background: #161e2e;
             border: 1px solid #283750;
             border-radius: 12px;
-            padding: 14px 12px;
+            padding: 10px 4px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             color: #bdc3c7;
             cursor: pointer;
             transition: all 0.15s;
         }
         .pattern-btn .icon {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
         }
         .pattern-btn .name {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
         }
         .pattern-btn.active {
             background: linear-gradient(135deg, #c0392b, #8e44ad);
@@ -258,6 +264,18 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
             <button class="pattern-btn" data-id="5">
                 <span class="icon">🌈</span>
                 <span class="name">Rainbow</span>
+            </button>
+            <button class="pattern-btn" data-id="6">
+                <span class="icon">🍾</span>
+                <span class="name">Champagne</span>
+            </button>
+            <button class="pattern-btn" data-id="7">
+                <span class="icon">🌠</span>
+                <span class="name">Meteor</span>
+            </button>
+            <button class="pattern-btn" data-id="8">
+                <span class="icon">🛷</span>
+                <span class="name">Santa</span>
             </button>
         </div>
 
