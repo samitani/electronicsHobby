@@ -1918,6 +1918,156 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Switch:SW_SPST"
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "SW"
+				(at 0 3.175 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SW_SPST"
+				(at 0 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Single Pole Single Throw (SPST) switch"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "switch lever"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "SW_SPST_0_0"
+				(circle
+					(center -2.032 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.524 0.254) (xy 1.524 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.032 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "SW_SPST_1_1"
+				(pin passive line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name "B"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "power:+5V"
 			(power global)
 			(pin_numbers
@@ -2301,22 +2451,16 @@
 		(uuid "0e80df7f-479e-4e29-8e56-ff3f99c44bdc")
 	)
 	(junction
-		(at 60.96 102.87)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "0f1ddb40-80b7-4e64-9db7-222d57757ce4")
-	)
-	(junction
 		(at 166.37 44.45)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "2508606f-56c3-4519-b538-f902512c109d")
 	)
 	(junction
-		(at 166.37 102.87)
+		(at 135.89 102.87)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "4e93e848-69b1-4392-be78-13e48a63ddcf")
+		(uuid "3c4ad6d1-3aa0-4ea1-a9a0-20e84e6bbbac")
 	)
 	(junction
 		(at 135.89 44.45)
@@ -2337,10 +2481,16 @@
 		(uuid "7131c09f-e70e-4f25-abef-f65a6f32a11b")
 	)
 	(junction
-		(at 135.89 102.87)
+		(at 60.96 102.87)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "7fde3686-4a65-4ab4-9f54-f83b0e8cb918")
+		(uuid "76eb53a0-6b88-4ba0-8b88-6553f5ba1e22")
+	)
+	(junction
+		(at 128.27 102.87)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "8b629cf8-95be-4e41-82e0-d7e13ac66e58")
 	)
 	(junction
 		(at 195.58 44.45)
@@ -2349,22 +2499,28 @@
 		(uuid "9621e9d9-b8c5-4a1f-8164-132d703c2c23")
 	)
 	(junction
+		(at 82.55 102.87)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9e375af1-feaa-449e-9de6-64d6eb3a1a90")
+	)
+	(junction
+		(at 148.59 102.87)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "afda7e49-35e2-4c77-bf57-44324e6f91ff")
+	)
+	(junction
 		(at 143.51 44.45)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "bca4bc2a-daaf-437a-bbfd-dbdd94aaa58d")
 	)
 	(junction
-		(at 148.59 102.87)
+		(at 166.37 102.87)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "c64977d7-ceeb-4622-a4ef-2a945716afd3")
-	)
-	(junction
-		(at 128.27 102.87)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "cb48d4ab-a14e-4d6e-90b5-09525a561eba")
+		(uuid "c84dcd0c-4960-48c2-862a-0059ffdd722a")
 	)
 	(junction
 		(at 151.13 58.42)
@@ -2602,13 +2758,13 @@
 	)
 	(wire
 		(pts
-			(xy 60.96 102.87) (xy 60.96 109.22)
+			(xy 82.55 102.87) (xy 128.27 102.87)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "2a2e72f1-962c-4361-9ab0-2af248be782c")
+		(uuid "342a3d90-a93e-4230-8aef-c1fb3856beae")
 	)
 	(wire
 		(pts
@@ -2732,16 +2888,6 @@
 	)
 	(wire
 		(pts
-			(xy 60.96 102.87) (xy 148.59 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "89b869b0-0779-400f-bf05-584dca66b8a1")
-	)
-	(wire
-		(pts
 			(xy 148.59 50.8) (xy 148.59 55.88)
 		)
 		(stroke
@@ -2752,6 +2898,16 @@
 	)
 	(wire
 		(pts
+			(xy 128.27 102.87) (xy 135.89 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8e5189af-8e0c-420b-bb55-2bc9907dd023")
+	)
+	(wire
+		(pts
 			(xy 153.67 58.42) (xy 151.13 58.42)
 		)
 		(stroke
@@ -2759,6 +2915,36 @@
 			(type default)
 		)
 		(uuid "90c03f53-b9de-45d1-ac66-6cebc0d79a45")
+	)
+	(wire
+		(pts
+			(xy 148.59 102.87) (xy 166.37 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9137150b-2983-447f-9feb-28d29b441763")
+	)
+	(wire
+		(pts
+			(xy 135.89 102.87) (xy 148.59 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "949d0061-3366-4cf9-a4e5-3705dd264182")
+	)
+	(wire
+		(pts
+			(xy 68.58 102.87) (xy 60.96 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "957115dd-586c-4c72-809c-3b0c9e3aae3f")
 	)
 	(wire
 		(pts
@@ -2792,6 +2978,36 @@
 	)
 	(wire
 		(pts
+			(xy 60.96 99.06) (xy 60.96 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b40053e1-8586-468b-b080-5b90f65d6bb9")
+	)
+	(wire
+		(pts
+			(xy 78.74 102.87) (xy 82.55 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b567c614-d9bf-47c9-9913-1e2bdb811b0b")
+	)
+	(wire
+		(pts
+			(xy 82.55 102.87) (xy 82.55 107.95)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bc6512a2-67d2-41ad-acbb-3c50be27becb")
+	)
+	(wire
+		(pts
 			(xy 102.87 73.66) (xy 102.87 68.58)
 		)
 		(stroke
@@ -2822,16 +3038,6 @@
 	)
 	(wire
 		(pts
-			(xy 148.59 102.87) (xy 166.37 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cbed9923-8f6f-4893-86fd-93525a5d3fc9")
-	)
-	(wire
-		(pts
 			(xy 166.37 44.45) (xy 195.58 44.45)
 		)
 		(stroke
@@ -2859,16 +3065,6 @@
 			(type default)
 		)
 		(uuid "cf8cedad-5d13-4929-9c34-396fe227f077")
-	)
-	(wire
-		(pts
-			(xy 205.74 102.87) (xy 205.74 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d467a094-c514-4cc3-95fc-9f2d8b1cc22a")
 	)
 	(wire
 		(pts
@@ -2922,13 +3118,23 @@
 	)
 	(wire
 		(pts
-			(xy 60.96 99.06) (xy 60.96 102.87)
+			(xy 205.74 76.2) (xy 205.74 102.87)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "f498112e-0950-478f-8341-4dbf3bbece4e")
+		(uuid "f0086c71-7e33-4ffc-8704-a721111116d3")
+	)
+	(wire
+		(pts
+			(xy 60.96 102.87) (xy 60.96 107.95)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fb5823d0-6882-4a44-8afd-1ff2e12c68d1")
 	)
 	(wire
 		(pts
@@ -3013,6 +3219,86 @@
 			(project "LEDShoot"
 				(path "/1cada348-28dd-48e1-a703-82e1d5e85b68"
 					(reference "#PWR01")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_SPST")
+		(at 73.66 102.87 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1361d64c-62f0-488c-9d1a-36dd51d6deca")
+		(property "Reference" "SW1"
+			(at 73.66 96.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SW_SPST"
+			(at 73.66 99.06 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 73.66 102.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 73.66 102.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Single Pole Single Throw (SPST) switch"
+			(at 73.66 102.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "9ac1a7b2-5455-4046-b891-c1ca628cc448")
+		)
+		(pin "2"
+			(uuid "70905e38-36a4-4e98-ae96-7ae378f9cca0")
+		)
+		(instances
+			(project "LEDShoot"
+				(path "/1cada348-28dd-48e1-a703-82e1d5e85b68"
+					(reference "SW1")
 					(unit 1)
 				)
 			)
@@ -3139,7 +3425,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "C571181:COMM-SMD_ESP32-DEVKITC-32D"
+		(property "Footprint" "Module:COMM-SMD_ESP32-DEVKITC-32D"
 			(at 135.89 85.09 0)
 			(hide yes)
 			(show_name no)
@@ -3360,7 +3646,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 187.96 66.802 90)
 			(hide yes)
 			(show_name no)
@@ -3409,84 +3695,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 60.96 109.22 0)
-		(mirror x)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "7fb4bb50-32b7-4fe4-a14e-f355826605fb")
-		(property "Reference" "#FLG02"
-			(at 60.96 111.125 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 60.96 114.3 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 60.96 109.22 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 60.96 109.22 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 60.96 109.22 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "2a5f4f7b-22ec-452e-9727-861972c76497")
-		)
-		(instances
-			(project "LEDShoot"
-				(path "/1cada348-28dd-48e1-a703-82e1d5e85b68"
-					(reference "#FLG02")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Polarized")
 		(at 195.58 86.36 0)
 		(mirror x)
@@ -3520,7 +3728,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm"
 			(at 196.5452 82.55 0)
 			(hide yes)
 			(show_name no)
@@ -3563,6 +3771,84 @@
 			(project "LEDShoot"
 				(path "/1cada348-28dd-48e1-a703-82e1d5e85b68"
 					(reference "C2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 60.96 107.95 0)
+		(mirror x)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "aaf4cfc3-65e6-45c0-a2cd-6a2889f84a87")
+		(property "Reference" "#FLG03"
+			(at 60.96 109.855 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 60.96 113.03 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 60.96 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 60.96 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 60.96 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "56c67044-4b0b-4129-90ee-155da4f59ea9")
+		)
+		(instances
+			(project "LEDShoot"
+				(path "/1cada348-28dd-48e1-a703-82e1d5e85b68"
+					(reference "#FLG03")
 					(unit 1)
 				)
 			)
@@ -3680,7 +3966,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_THT:C_Disc_D3.0mm_W2.0mm_P2.50mm"
 			(at 136.8552 52.07 0)
 			(hide yes)
 			(show_name no)
@@ -3807,6 +4093,84 @@
 		)
 	)
 	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 82.55 107.95 0)
+		(mirror x)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "f2776de9-3e9c-4cf6-b3f4-22f66252d906")
+		(property "Reference" "#FLG02"
+			(at 82.55 109.855 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 82.55 113.03 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 82.55 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 82.55 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 82.55 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "bd4f9f75-7374-443e-8f8d-bc56f9f3eab3")
+		)
+		(instances
+			(project "LEDShoot"
+				(path "/1cada348-28dd-48e1-a703-82e1d5e85b68"
+					(reference "#FLG02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "MySymbol:74HCT125")
 		(at 166.37 57.15 0)
 		(mirror x)
@@ -3840,8 +4204,9 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x07_P2.54mm_Vertical"
 			(at 166.37 57.15 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
