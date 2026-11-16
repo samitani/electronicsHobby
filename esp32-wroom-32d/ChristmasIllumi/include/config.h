@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 #ifndef LED_COUNT
-#define LED_COUNT 60
+#define LED_COUNT 120
 #endif
 
 // 初期輝度設定 (0 - 255): 77 = 約30% (消費電力抑制)

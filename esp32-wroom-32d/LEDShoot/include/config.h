@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 #ifndef LED_COUNT
-#define LED_COUNT 60
+#define LED_COUNT 120
 #endif
 
 // LEDの方向設定:
