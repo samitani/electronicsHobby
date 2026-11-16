@@ -92,6 +92,7 @@ void illumination_update(illumination_t* illumi, uint32_t current_time_ms);
 void illumination_render(const illumination_t* illumi, rgb_color_t* led_buffer, int led_count);
 
 void illumination_set_pattern(illumination_t* illumi, illumi_pattern_t pattern);
+void illumination_next_pattern(illumination_t* illumi);
 void illumination_set_power(illumination_t* illumi, bool power_on);
 void illumination_set_brightness(illumination_t* illumi, uint8_t brightness);
 void illumination_set_speed(illumination_t* illumi, float speed_factor);
