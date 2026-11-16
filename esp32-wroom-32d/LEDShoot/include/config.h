@@ -12,7 +12,7 @@ extern "C" {
 // ハードウェア設定
 // ==========================================
 #ifndef LED_GPIO
-#define LED_GPIO 25
+#define LED_GPIO 15
 #endif
 
 #ifndef LED_COUNT
