@@ -12,11 +12,11 @@ extern "C" {
 // ハードウェア設定
 // ==========================================
 #ifndef LED_GPIO
-#define LED_GPIO 25
+#define LED_GPIO 15
 #endif
 
 #ifndef LED_COUNT
-#define LED_COUNT 60
+#define LED_COUNT 120
 #endif
 
 // LEDの方向設定:

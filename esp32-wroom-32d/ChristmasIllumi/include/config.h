@@ -12,11 +12,16 @@ extern "C" {
 // ハードウェア設定 (LEDShootと同一構成)
 // ==========================================
 #ifndef LED_GPIO
-#define LED_GPIO 25
+#define LED_GPIO 15
+#endif
+
+// 物理タクトスイッチピン (押下時GND接続, 内部プルアップ使用)
+#ifndef BUTTON_GPIO
+#define BUTTON_GPIO 23
 #endif
 
 #ifndef LED_COUNT
-#define LED_COUNT 60
+#define LED_COUNT 120
 #endif
 
 // 初期輝度設定 (0 - 255): 77 = 約30% (消費電力抑制)

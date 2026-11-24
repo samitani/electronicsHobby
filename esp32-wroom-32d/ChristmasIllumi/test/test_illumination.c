@@ -50,6 +50,15 @@ int main(void) {
     assert(illumi.pattern == PATTERN_SNOWFALL);
     printf("Auto Cycle switch test passed!\n");
 
+    // 5. 物理ボタン用の next_pattern テスト
+    illumi.pattern = PATTERN_SANTA; // 最後のパターン (8)
+    illumination_next_pattern(&illumi);
+    assert(illumi.pattern == PATTERN_CANDY_CANE); // 先頭 (0) にループ
+    assert(illumi.power_on == true);
+    illumination_next_pattern(&illumi);
+    assert(illumi.pattern == PATTERN_SNOWFALL); // 次 (1) へ
+    printf("illumination_next_pattern test passed!\n");
+
     printf("All illumination unit tests passed successfully!\n");
     return 0;
 }

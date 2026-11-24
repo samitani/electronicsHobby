@@ -112,6 +112,11 @@ void illumination_set_pattern(illumination_t* illumi, illumi_pattern_t pattern) 
     }
 }
 
+void illumination_next_pattern(illumination_t* illumi) {
+    illumi->pattern = (illumi_pattern_t)((illumi->pattern + 1) % PATTERN_COUNT);
+    illumi->power_on = true; // ボタン操作時は点灯を保証
+}
+
 void illumination_set_power(illumination_t* illumi, bool power_on) {
     illumi->power_on = power_on;
 }

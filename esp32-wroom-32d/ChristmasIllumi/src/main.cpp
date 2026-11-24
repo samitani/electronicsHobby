@@ -60,6 +60,10 @@ void setup() {
                   LED_COUNT, LED_GPIO, LED_DIN_IS_TOP ? "YES" : "NO");
     led_controller_init(LED_GPIO, LED_COUNT, LED_DIN_IS_TOP);
 
+    // 2. 物理タクトスイッチ初期化 (内部プルアップ)
+    Serial.printf("[Button] Initializing tactile switch on GPIO %d (INPUT_PULLUP)...\n", BUTTON_GPIO);
+    pinMode(BUTTON_GPIO, INPUT_PULLUP);
+
     // 起動時テスト点灯 (赤 -> 緑 -> 消灯)
     for (int i = 0; i < LED_COUNT; i++) g_led_buffer[i] = (rgb_color_t){20, 0, 0};
     led_controller_apply_buffer(g_led_buffer, LED_COUNT);
@@ -86,10 +90,32 @@ void loop() {
 
     uint32_t now = millis();
 
-    // 2. アニメーション更新
+    // 2. 物理タクトスイッチの入力処理 (デバウンス & 押下エッジ検出)
+    static int s_last_button_state = HIGH;
+    static uint32_t s_last_debounce_time = 0;
+    const uint32_t DEBOUNCE_DELAY_MS = 50;
+
+    int reading = digitalRead(BUTTON_GPIO);
+    if (reading != s_last_button_state) {
+        if ((now - s_last_debounce_time) > DEBOUNCE_DELAY_MS) {
+            s_last_debounce_time = now;
+            s_last_button_state = reading;
+
+            // 押下エッジ（HIGH -> LOW）で次のパターンへ進める
+            if (reading == LOW) {
+                illumination_next_pattern(&g_illumi);
+                Serial.printf("[Button] Switched to pattern: %s (ID: %d)\n",
+                              illumination_get_pattern_name(g_illumi.pattern),
+                              g_illumi.pattern);
+                sync_state_to_clients();
+            }
+        }
+    }
+
+    // 3. アニメーション更新
     illumination_update(&g_illumi, now);
 
-    // 3. LED描画 (約60 FPS = 16ms周期)
+    // 4. LED描画 (約60 FPS = 16ms周期)
     if (now - g_last_render_ms >= 16) {
         g_last_render_ms = now;
         illumination_render(&g_illumi, g_led_buffer, LED_COUNT);
